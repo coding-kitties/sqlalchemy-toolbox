@@ -1,5 +1,5 @@
 import setuptools
-from sqlalchemy_resolver import get_version
+from sqlalchemy_tools import get_version
 
 VERSION = get_version()
 
@@ -10,11 +10,12 @@ with open('requirements.txt') as f:
     required = f.read().splitlines()
 
 setuptools.setup(
-    name="sqlalchemy-resolver",
+    name="sqlalchemy-toolbox",
     version=VERSION,
-    license="BSL-1.1",
+    license="MIT",
     author="coding kitties",
-    description="A collection of sqlalchemy utility classes that helps in using sqlalchemy",
+    description="A collection of sqlalchemy utility classes and "
+                "functionalities that help in using sqlalchemy",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/coding-kitties/sqlalchemy-resolver.git",

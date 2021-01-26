@@ -2,8 +2,8 @@ import os
 from pathlib import Path
 from unittest import TestCase
 
-from sqlalchemy_resolver.wrappers import SQLAlchemyWrapper
-from sqlalchemy_resolver.constants import DATABASE_PATH, DATABASE_NAME
+from sqlalchemy_tools.wrappers import SQLAlchemyWrapper
+from sqlalchemy_tools.constants import DATABASE_PATH, DATABASE_NAME
 
 BASE_DIR = str(Path(__file__).parent.parent.parent)
 

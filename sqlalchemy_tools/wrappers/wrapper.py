@@ -6,15 +6,15 @@ from sqlalchemy.orm import Query, class_mapper, sessionmaker, scoped_session, \
     Session
 from sqlalchemy.orm.exc import UnmappedClassError
 from sqlalchemy.ext.declarative import declarative_base
-
-from sqlalchemy_resolver.base_model import Model
-from sqlalchemy_resolver.configuration import Config
-from sqlalchemy_resolver.exceptions import SQLAlchemyWrapperException, \
+from sqlalchemy_tools.base_model import Model
+from sqlalchemy_tools.configuration import Config
+from sqlalchemy_tools.exceptions import SQLAlchemyWrapperException, \
     SQLAlchemyResolverFlaskException
-from sqlalchemy_resolver.constants import DATABASE_HOST, DATABASE_PASSWORD, \
+from sqlalchemy_tools.constants import DATABASE_HOST, DATABASE_PASSWORD, \
     DATABASE_TYPE, DATABASE_URL, DATABASE_NAME, DATABASE_USERNAME, \
     DATABASE_PATH
-from sqlalchemy_resolver.database_type import DatabaseType
+from sqlalchemy_tools.database_type import DatabaseType
+from sqlalchemy_tools.migrations import configure_alembic
 
 
 class _SessionProperty:
@@ -225,6 +225,8 @@ class SQLAlchemyWrapper:
         self.Session = None
         self._model = self.make_declarative_base(model_class)
         self.config = config
+        self.connected = False
+        self._url = None
 
     @staticmethod
     def make_declarative_base(model_class):
@@ -242,6 +244,10 @@ class SQLAlchemyWrapper:
         return self.Session()
 
     @property
+    def get_database_url(self) -> str:
+        return self._url
+
+    @property
     def Model(self):
         return self._model
 
@@ -251,30 +257,35 @@ class SQLAlchemyWrapper:
     def set_config(self, config: Config):
         self.config = config
 
-    # def initialize_migrations(self, raise_exception: bool = True):
-    #
-    #     if MIGRATIONS_DIRECTORY not in self.config:
-    #         raise SQLAlchemyWrapperException(
-    #             "migrations directory is not specified in the config"
-    #         )
-    #
-    #     migration_directory = self.config[MIGRATIONS_DIRECTORY]
-    #     destination_dir = os.path.join(migration_directory, 'alembic')
-    #
-    #     if os.path.isdir(destination_dir) and raise_exception:
-    #         raise SQLAlchemyWrapperException(
-    #             "Migration directory already exists"
-    #         )
-    #
-    #     if not os.path.isdir(destination_dir):
-    #         os.makedirs(migration_directory)
-    #
-    #     if DATABASE_URL not in self.config:
-    #         raise SQLAlchemyWrapperException(
-    #             "Database wrapper is not configured"
-    #         )
-    #
-    #     init_migrations(migration_directory, self.config[DATABASE_URL])
+    def initialize_migrations(
+            self, migrations_directory, raise_exception: bool = True
+    ):
+
+        if not self.connected:
+            raise SQLAlchemyWrapperException(
+                "SQLAlchemy wrapper is not connected"
+            )
+
+        alembic_dir = os.path.join(migrations_directory, 'alembic')
+
+        if not os.path.isdir(migrations_directory) and raise_exception:
+            raise SQLAlchemyWrapperException(
+                "Migration directory does not exist"
+            )
+
+        if not os.path.isdir(alembic_dir) and raise_exception:
+            raise SQLAlchemyWrapperException(
+                "Alembic migration directory does not exist"
+            )
+
+        alembic_ini_path = os.path.join(migrations_directory, 'alembic.ini')
+
+        if not os.path.isfile(alembic_ini_path) and raise_exception:
+            raise SQLAlchemyWrapperException(
+                "Alembic ini file does not exist"
+            )
+
+        configure_alembic(self.config[DATABASE_URL], alembic_ini_path)
     #
     # def perform_auto_migration(self, migration_id: str = None):
     #     migration_directory = self.config[MIGRATIONS_DIRECTORY]
@@ -314,11 +325,14 @@ class SQLAlchemyWrapper:
                     "DATABASE_PASSWORD, DATABASE_HOST and DATABASE_NAME"
                  )
 
+        self._url = self.config[DATABASE_URL]
+
         self.initialize_engine(
             self.config[DATABASE_URL], ssl_require=ssl_require
         )
         self.initialize_session()
         self.initialize_model()
+        self.connected = True
 
     def connect_sqlite(self, config, connection_url: str = None):
 
@@ -365,9 +379,11 @@ class SQLAlchemyWrapper:
         )
         self.config[DATABASE_TYPE] = DatabaseType.SQLITE3.value
 
+        self._url = self.config[DATABASE_URL]
         self.initialize_engine(self.config[DATABASE_URL])
         self.initialize_session()
         self.initialize_model()
+        self.connected = True
 
     def initialize_engine(self, database_url, ssl_require: bool = False):
 

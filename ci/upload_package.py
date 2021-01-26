@@ -2,7 +2,7 @@ import os
 import shutil
 from yolk.pypi import CheeseShop
 
-PACKAGE_NAME = 'sqlalchemy_resolver'
+PACKAGE_NAME = 'sqlalchemy_toolbox'
 
 
 def get_latest_version_number(package_name):
@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     sys.path.append('../')
 
-    from sqlalchemy_resolver import get_version
+    from sqlalchemy_tools import get_version
     released_version = get_latest_version_number(PACKAGE_NAME)
 
     if released_version != get_version():
@@ -28,5 +28,5 @@ if __name__ == "__main__":
             shutil.rmtree('dist')
 
         os.system("python setup.py sdist bdist_wheel")
-        os.system("twine upload -r sqlalchemy-resolver dist/*")
+        os.system("twine upload -r sqlalchemy-toolbox dist/*")
         os.system("twine upload -p $pipy_password -u $pipy_username dist/*")
