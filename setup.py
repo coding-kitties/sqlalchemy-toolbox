@@ -20,7 +20,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/coding-kitties/sqlalchemy-toolbox.git",
     packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
-    keywords=['SQLALCHEMY', 'SQL', 'ORM', 'DATABASE'],
+    keywords=['SQLALCHEMY', 'SQL', 'ORM', 'DATABASE', 'ALEMBIC'],
     classifiers=[
         "Intended Audience :: Developers",
         'Programming Language :: Python :: 3',
