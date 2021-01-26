@@ -18,8 +18,7 @@ setuptools.setup(
                 "functionalities that help in using sqlalchemy",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/coding-kitties/sqlalchemy-resolver.git",
-    download_url="https://github.com/coding-kitties/sqlalchemy-resolver/archive/{}.tar.gz".format(get_version()),
+    url="https://github.com/coding-kitties/sqlalchemy-toolbox.git",
     packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
     keywords=['SQLALCHEMY', 'SQL', 'ORM', 'DATABASE'],
     classifiers=[
