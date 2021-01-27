@@ -10,10 +10,11 @@ with open('requirements.txt') as f:
     required = f.read().splitlines()
 
 setuptools.setup(
-    name="sqlalchemy-toolbox",
+    name="sqlalchemy_toolbox",
     version=VERSION,
     license="MIT",
     author="coding kitties",
+    author_email="codingkitties@gmail.com",
     description="A collection of sqlalchemy utility classes and "
                 "functionalities that help in using sqlalchemy",
     long_description=long_description,

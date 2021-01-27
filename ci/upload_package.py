@@ -2,7 +2,7 @@ import os
 import shutil
 from yolk.pypi import CheeseShop
 
-PACKAGE_NAME = 'sqlalchemy_toolbox'
+PACKAGE_NAME = 'sqlalchemy-toolbox'
 
 
 def get_latest_version_number(package_name):
