@@ -6,15 +6,15 @@ from sqlalchemy.orm import Query, class_mapper, sessionmaker, scoped_session, \
     Session
 from sqlalchemy.orm.exc import UnmappedClassError
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy_tools.base_model import Model
-from sqlalchemy_tools.configuration import Config
-from sqlalchemy_tools.exceptions import SQLAlchemyWrapperException, \
+from sqlalchemy_toolbox.base_model import Model
+from sqlalchemy_toolbox.configuration import Config
+from sqlalchemy_toolbox.exceptions import SQLAlchemyWrapperException, \
     SQLAlchemyResolverFlaskException
-from sqlalchemy_tools.constants import DATABASE_HOST, DATABASE_PASSWORD, \
+from sqlalchemy_toolbox.constants import DATABASE_HOST, DATABASE_PASSWORD, \
     DATABASE_TYPE, DATABASE_URL, DATABASE_NAME, DATABASE_USERNAME, \
     DATABASE_PATH
-from sqlalchemy_tools.database_type import DatabaseType
-from sqlalchemy_tools.migrations import configure_alembic
+from sqlalchemy_toolbox.database_type import DatabaseType
+from sqlalchemy_toolbox.migrations import configure_alembic
 
 
 class _SessionProperty:

@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     sys.path.append('../')
 
-    from sqlalchemy_tools import get_version
+    from sqlalchemy_toolbox import get_version
     released_version = get_latest_version_number(PACKAGE_NAME)
 
     if released_version != get_version():

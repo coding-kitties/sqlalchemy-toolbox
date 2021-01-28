@@ -1,4 +1,4 @@
-from sqlalchemy_tools.utils.version import get_version
+from sqlalchemy_toolbox.utils.version import get_version
 
 VERSION = (0, 1, 0, 'alpha', 0)
 

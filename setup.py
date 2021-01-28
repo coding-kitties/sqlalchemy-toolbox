@@ -1,5 +1,5 @@
 import setuptools
-from sqlalchemy_tools import get_version
+from sqlalchemy_toolbox import get_version
 
 VERSION = get_version()
 
