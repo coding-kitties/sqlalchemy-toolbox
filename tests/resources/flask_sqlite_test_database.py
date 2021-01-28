@@ -21,7 +21,9 @@ flask_sql_lite_db = SQLAlchemyWrapper(query_class=FlaskBaseQuery)
 class FlaskSQLiteTestBase(TestCase):
 
     def setUp(self) -> None:
-        flask_sql_lite_db.connect_sqlite(create_config())
+        flask_sql_lite_db.connect_sqlite(
+            database_directory_path=BASE_DIR, database_name="test_db"
+        )
         flask_sql_lite_db.initialize_tables()
 
     def tearDown(self):

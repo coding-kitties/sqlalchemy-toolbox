@@ -21,12 +21,14 @@ sql_lite_db = SQLAlchemyWrapper()
 class SQLiteTestBase(TestCase):
 
     def setUp(self) -> None:
-        sql_lite_db.connect_sqlite(create_config())
+        sql_lite_db.connect_sqlite(
+            database_directory_path=BASE_DIR, database_name="test_db"
+        )
         sql_lite_db.initialize_tables()
 
     def tearDown(self):
         sql_lite_db.session.close()
-        database_path = sql_lite_db.config[DATABASE_PATH]
+        database_path = os.path.join(BASE_DIR, "test_db.sqlite3")
 
         if os.path.isfile(database_path):
             os.remove(database_path)

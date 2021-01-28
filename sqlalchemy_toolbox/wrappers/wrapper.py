@@ -294,6 +294,10 @@ class SQLAlchemyWrapper:
     def connect_postgresql(
             self,
             config: Config,
+            database_host: str = None,
+            database_username: str = None,
+            database_password: str = None,
+            database_name: str = None,
             ssl_require: bool = False,
             connection_url: str = None
     ):
@@ -303,30 +307,18 @@ class SQLAlchemyWrapper:
             if config is None:
                 self.config = Config()
                 self.config[DATABASE_URL] = connection_url
-        else:
-            if config:
-                self.config = config
-
-            if not self.config:
-                raise SQLAlchemyWrapperException("Config is not defined")
-
-            # Try to get all required configuration properties
-            try:
-                self.config[DATABASE_URL] = 'postgresql://{}:{}@{}/{}'.format(
-                    self.config[DATABASE_USERNAME],
-                    self.config[DATABASE_PASSWORD],
-                    self.config[DATABASE_HOST],
-                    self.config[DATABASE_NAME]
-                )
                 self.config[DATABASE_TYPE] = DatabaseType.POSTGRESQL.value
-            except Exception:
-                raise SQLAlchemyWrapperException(
-                    "Missing configuration: DATABASE_USERNAME, "
-                    "DATABASE_PASSWORD, DATABASE_HOST and DATABASE_NAME"
-                 )
+        else:
+            self.config = Config()
+            self.config[DATABASE_URL] = 'postgresql://{}:{}@{}/{}'.format(
+                database_username,
+                database_password,
+                database_host,
+                database_name
+            )
+            self.config[DATABASE_TYPE] = DatabaseType.POSTGRESQL.value
 
         self._url = self.config[DATABASE_URL]
-
         self.initialize_engine(
             self.config[DATABASE_URL], ssl_require=ssl_require
         )
@@ -334,40 +326,34 @@ class SQLAlchemyWrapper:
         self.initialize_model()
         self.connected = True
 
-    def connect_sqlite(self, config, connection_url: str = None):
+    def connect_sqlite(
+            self,
+            database_directory_path: str = None,
+            database_name: str = None,
+            connection_url: str = None):
 
         if connection_url:
-
-            if config is None:
-                self.config = Config()
-                self.config[DATABASE_URL] = connection_url
+            self.config = Config()
+            self.config[DATABASE_URL] = connection_url
         else:
-            if config:
-                self.config = config
+            self.config = Config()
 
-            if not self.config:
-                raise SQLAlchemyWrapperException("Config is not defined")
+            if database_directory_path is None:
+                raise SQLAlchemyWrapperException(
+                    "Missing configuration database_directory_path"
+                )
 
-        if DATABASE_PATH not in self.config:
-            raise SQLAlchemyWrapperException(
-                "Missing configuration DATABASE_PATH"
-            )
+            if not os.path.isdir(database_directory_path):
+                raise SQLAlchemyWrapperException(
+                    "Given database path is not a directory"
+                )
 
-        if not os.path.isdir(self.config[DATABASE_PATH]):
-            raise SQLAlchemyWrapperException(
-                "Given database path is not a directory"
-            )
+            if database_name is None:
+                raise SQLAlchemyWrapperException(
+                    "Missing configuration database_name"
+                )
 
-        if DATABASE_NAME not in self.config:
-            raise SQLAlchemyWrapperException(
-                "Missing configuration DATABASE_NAME"
-            )
-
-        data_base_path = self.config[DATABASE_PATH]
-        data_base_name = self.config[DATABASE_NAME]
-        database_path = os.path.join(
-            data_base_path, data_base_name
-        )
+        database_path = os.path.join(database_directory_path, database_name)
         database_path += ".sqlite3"
         self.config[DATABASE_PATH] = database_path
 
@@ -375,7 +361,7 @@ class SQLAlchemyWrapper:
             os.mknod(self.config[DATABASE_PATH])
 
         self.config[DATABASE_URL] = 'sqlite:////{}'.format(
-            config[DATABASE_PATH]
+            self.config[DATABASE_PATH]
         )
         self.config[DATABASE_TYPE] = DatabaseType.SQLITE3.value
 
